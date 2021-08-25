@@ -1,5 +1,5 @@
 {
-  "name": "amd-vehicle-management-system",
+  "name": "vehicle-inventory",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
