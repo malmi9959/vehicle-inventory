@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import { getUser } from "../utils/getUser";
+import { getUser } from "../helpers/getUser";
 
 const PublicRoute = ({ component: Component, restricted, ...rest }) => {
   const user = getUser();

@@ -1,6 +1,6 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
-import { getUser } from "../utils/getUser";
+import { getUser } from "../helpers/getUser";
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const user = getUser();
