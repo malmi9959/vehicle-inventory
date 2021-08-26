@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 import { ToastProvider } from "react-toast-notifications";
+import Layout from "./containers/Layout";
 import Login from "./pages/Login";
+import PrivateRoute from "./routes/privateRoutes";
 import PublicRoute from "./routes/publicRoutes";
 
 function App() {
@@ -10,6 +12,7 @@ function App() {
         <Router>
           <Switch>
             <PublicRoute restricted component={Login} path="/login" />
+            <PrivateRoute component={Layout} path="/app" />
             <Redirect to="login" from="/" />
           </Switch>
         </Router>
