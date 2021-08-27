@@ -5,6 +5,11 @@ import { Label, Button, Input } from "@windmill/react-ui";
 import { useForm } from "react-hook-form";
 
 import { Link } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { LOGIN } from "../graphql/mutations";
+import { setWithExpiry } from "../utils/localStorage";
+import { useToasts } from "react-toast-notifications";
+import Spinner from "../components/Spinner";
 const boxStyles = {
   backdropFilter: "saturate(180%) blur(20px)",
   background: "#0e2433",
@@ -21,9 +26,46 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const { addToast } = useToasts();
+
+  const [login, { loading }] = useMutation(LOGIN, {
+    onCompleted: (data) => {
+      setWithExpiry("user", data.login, data.login.tokenExpiration);
+      window.location.replace("/app");
+    },
+    onError: ({ graphQLErrors }) => {
+      const { message } = graphQLErrors[0];
+      addToast(message, {
+        appearance: "error",
+      });
+    },
+  });
+
+  function errorHandle(error) {
+    if (error && error.type === "required") {
+      return (
+        <div className="capitalize ">
+          {error.ref && error.ref.name} is required
+        </div>
+      );
+    } else if (error && error.type === "pattern") {
+      return (
+        <div className="capitalize ">
+          Enter Valid {error.ref && error.ref.name}
+        </div>
+      );
+    }
+    return;
+  }
 
   const onSubmit = (data) => {
-    console.log(data);
+    login({
+      variables: { email: data.email, password: data.password },
+    })
+      .then(() => {})
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -50,11 +92,19 @@ const Login = () => {
                     </span>
                   </div>
                   <Input
-                    {...register("email", { required: "Email Required" })}
+                    {...register("email", {
+                      required: "Email Required",
+                      pattern:
+                        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                    })}
                     className="mt-1"
-                    type="email"
+                    type="text"
                     placeholder="john@doe.com"
                   />
+                  <div className="pt-2 text-sm text-red-500">
+                    {errorHandle(errors.email)}
+                    {/* <span>{errors?.name && "This field is required!"}</span> */}
+                  </div>
                 </Label>
 
                 <Label className="mt-4">
@@ -79,8 +129,7 @@ const Login = () => {
                   block
                   to="/app"
                 >
-                  {/* Login */}
-                  Log in
+                  {loading ? <Spinner /> : "Log in"}
                 </Button>
               </form>
 

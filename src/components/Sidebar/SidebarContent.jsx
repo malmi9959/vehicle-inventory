@@ -22,12 +22,14 @@ const boxStyles = {
 function SidebarContent() {
   return (
     <div className="py-0 text-gray-500 dark:text-gray-400">
-      <div style={boxStyles} className="w-full py-6 bg-primary">
+      <div style={boxStyles} className="w-full py-6 bg-primary-light">
         <a
-          className="text-lg font-bold text-gray-800 dark:text-gray-200"
+          className="text-xl font-light text-gray-800 dark:text-gray-200"
           href="/#"
         >
-          <img className="w-32 mx-auto" src="/logo-secondary.png" alt="" />
+          <h2 className="uppercase ">
+            <span className="font-semibold">AMD</span> Learners
+          </h2>
         </a>
       </div>
 

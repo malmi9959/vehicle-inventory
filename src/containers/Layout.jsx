@@ -18,7 +18,7 @@ function Layout() {
 
   useEffect(() => {
     closeSidebar();
-  }, [location, closeSidebar]);
+  }, [location]);
 
   return (
     <div
