@@ -72,7 +72,7 @@ function CreateAccount() {
 
               <p className="mt-4">
                 <Link
-                  className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
+                  className="text-sm font-medium text-primary dark:text-primary-light hover:underline"
                   to="/login"
                 >
                   Already have an account? Login

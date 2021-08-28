@@ -4,7 +4,6 @@ import { Label, Button, Input } from "@windmill/react-ui";
 
 import { useForm } from "react-hook-form";
 
-import { Link } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { LOGIN } from "../graphql/mutations";
 import { setWithExpiry } from "../utils/localStorage";
@@ -133,24 +132,24 @@ const Login = () => {
                 </Button>
               </form>
 
-              <hr className="my-8" />
+              {/* <hr className="my-8" /> */}
 
-              <p className="mt-4">
+              {/* <p className="mt-4">
                 <Link
                   className="text-sm font-medium text-dark dark:text-purple-400 hover:underline"
                   to="/forgot-password"
                 >
                   Forgot your password?
                 </Link>
-              </p>
-              <p className="mt-1">
+              </p> */}
+              {/* <p className="mt-1">
                 <Link
                   className="text-sm font-medium text-dark dark:text-purple-400 hover:underline"
                   to="/create-account"
                 >
                   Create account
                 </Link>
-              </p>
+              </p> */}
             </div>
           </main>
         </div>

@@ -56,7 +56,7 @@ function Header(props) {
         <div className="flex justify-center flex-1 lg:mr-32"></div>
         <ul className="flex items-center flex-shrink-0 space-x-6">
           {/* <!-- Theme toggler --> */}
-          <li className="flex">
+          {/* <li className="flex">
             <button
               className="rounded-md focus:outline-none focus:shadow-outline-purple"
               onClick={toggleMode}
@@ -71,7 +71,7 @@ function Header(props) {
                 <MoonIcon className="w-5 h-5 text-primary" aria-hidden="true" />
               )}
             </button>
-          </li>
+          </li> */}
           {/* <!-- Notifications menu --> */}
           {/* <li className="relative">
             <button
@@ -126,7 +126,7 @@ function Header(props) {
               isOpen={isProfileMenuOpen}
               onClose={() => setIsProfileMenuOpen(false)}
             >
-              <DropdownItem tag="a" href="#">
+              <DropdownItem tag="a" href="/app/profile">
                 <OutlinePersonIcon
                   className="w-4 h-4 mr-3"
                   aria-hidden="true"
