@@ -29,6 +29,7 @@ import { ReactComponent as OutlineLogoutIcon } from "./outlineLogout.svg";
 import { ReactComponent as PhoneIcon } from "./phone.svg";
 import { ReactComponent as CalendarIcon } from "./calendar.svg";
 import { ReactComponent as VehicleIcon } from "./vehicle.svg";
+import { ReactComponent as EyeIcon } from "./eye.svg";
 
 export {
   ButtonsIcon,
@@ -62,4 +63,5 @@ export {
   PhoneIcon,
   CalendarIcon,
   VehicleIcon,
+  EyeIcon,
 };

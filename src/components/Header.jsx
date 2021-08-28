@@ -1,26 +1,28 @@
 import React, { useContext, useState } from "react";
 import { SidebarContext } from "../context/SidebarContext";
 import {
-  MoonIcon,
-  SunIcon,
   MenuIcon,
   OutlinePersonIcon,
   OutlineCogIcon,
   OutlineLogoutIcon,
+  SearchIcon,
+  BellIcon,
 } from "../icons";
 import {
   Avatar,
   Dropdown,
   DropdownItem,
-  WindmillContext,
+  // WindmillContext,
   Modal,
   ModalBody,
   ModalFooter,
   Button,
+  Input,
+  Badge,
 } from "@windmill/react-ui";
 
 function Header(props) {
-  const { mode, toggleMode } = useContext(WindmillContext);
+  // const { mode, toggleMode } = useContext(WindmillContext);
   const { toggleSidebar } = useContext(SidebarContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   function openModal() {
@@ -30,12 +32,16 @@ function Header(props) {
     setIsModalOpen(false);
   }
 
-  // const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
+  const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-  // function handleNotificationsClick() {
-  //   setIsNotificationsMenuOpen(!isNotificationsMenuOpen);
-  // }
+  function handleNotificationsClick() {
+    if (isNotificationsMenuOpen) {
+      setIsNotificationsMenuOpen(false);
+    } else {
+      setIsNotificationsMenuOpen(true);
+    }
+  }
 
   function handleProfileClick() {
     setIsProfileMenuOpen(!isProfileMenuOpen);
@@ -53,7 +59,18 @@ function Header(props) {
           <MenuIcon className="w-6 h-6 text-primary" aria-hidden="true" />
         </button>
         {/* <!-- Search input --> */}
-        <div className="flex justify-center flex-1 lg:mr-32"></div>
+        <div className="flex justify-center flex-1 lg:mr-32">
+          <div className="relative w-full max-w-xl mr-6 text-primary focus-within:text-primary-light">
+            <div className="absolute inset-y-0 flex items-center pl-2">
+              <SearchIcon className="w-4 h-4" aria-hidden="true" />
+            </div>
+            <Input
+              className="pl-8 text-gray-700"
+              placeholder="Search for Vehicles"
+              aria-label="Search"
+            />
+          </div>
+        </div>
         <ul className="flex items-center flex-shrink-0 space-x-6">
           {/* <!-- Theme toggler --> */}
           {/* <li className="flex">
@@ -73,7 +90,7 @@ function Header(props) {
             </button>
           </li> */}
           {/* <!-- Notifications menu --> */}
-          {/* <li className="relative">
+          <li className="relative">
             <button
               className="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple"
               onClick={handleNotificationsClick}
@@ -81,7 +98,7 @@ function Header(props) {
               aria-haspopup="true"
             >
               <BellIcon className="w-5 h-5 text-primary" aria-hidden="true" />
-          
+
               <span
                 aria-hidden="true"
                 className="absolute top-0 right-0 inline-block w-3 h-3 transform translate-x-1 -translate-y-1 bg-red-600 border-2 border-white rounded-full dark:border-gray-800"
@@ -105,7 +122,7 @@ function Header(props) {
                 <span>Alerts</span>
               </DropdownItem>
             </Dropdown>
-          </li> */}
+          </li>
           {/* <!-- Profile menu --> */}
           <li className="relative">
             <button

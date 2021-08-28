@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import PageTitle from "../components/Typography/PageTitle";
 import { Button, Card, CardBody } from "@windmill/react-ui";
 import { EditIcon } from "../icons";
@@ -8,20 +8,20 @@ import { GET_USER } from "../graphql/queries";
 const Profile = () => {
   const { loading, data, error } = useQuery(GET_USER, {
     onError: (error) => {
-      console.log(error);
+      console.log(error.message);
     },
   });
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
   return (
     <Fragment>
       <PageTitle>Profile</PageTitle>
-
-      {loading && !data?.getUser ? (
-        <div>Loading..</div>
-      ) : (
+      {error && (
+        <Card className="bg-red-100 border border-red-500">
+          <CardBody className="text-red-700">{error?.message}</CardBody>
+        </Card>
+      )}
+      {loading && <div>Loading...</div>}
+      {!loading && data && data?.getUser && (
         <Card className="w-full lg:w-2/3">
           <CardBody>
             <p className="mb-4 font-semibold text-gray-600 dark:text-gray-300">
@@ -32,7 +32,7 @@ const Profile = () => {
                 <CardBody className="flex justify-between">
                   <div className="inline-flex items-center">
                     <span className="text-sm text-gray-500">Username: </span>
-                    <div className="ml-4">{data?.getUser.username}</div>
+                    <div className="ml-4">{data?.getUser?.username}</div>
                   </div>
 
                   <Button size="small" iconRight={EditIcon}>
@@ -43,23 +43,23 @@ const Profile = () => {
               <div className="grid grid-cols-2">
                 <div className="pb-9">
                   <div className="text-sm text-gray-500">First Name</div>
-                  <div>{data.getUser.firstName}</div>
+                  <div>{data?.getUser?.firstName}</div>
                 </div>
                 <div className="pb-9">
                   <div className="text-sm text-gray-500">Last Name</div>
-                  <div>{data.getUser.lastName}</div>
+                  <div>{data?.getUser?.lastName}</div>
                 </div>
                 <div className="pb-9">
                   <div className="text-sm text-gray-500">Email Address</div>
-                  <div>{data.getUser.email}</div>
+                  <div>{data?.getUser?.email}</div>
                 </div>
                 <div className="pb-9">
                   <div className="text-sm text-gray-500">Phone Number</div>
-                  <div>{data.getUser.phone}</div>
+                  <div>{data?.getUser?.phone}</div>
                 </div>
                 <div className="pb-9">
                   <div className="text-sm text-gray-500">Address</div>
-                  <div>{data.getUser.address}</div>
+                  <div>{data?.getUser?.address}</div>
                 </div>
               </div>
             </div>
