@@ -19,5 +19,9 @@ module.exports = windmill({
     extend: {},
   },
   variants: {},
-  plugins: [],
+  plugins: [
+    require("@tailwindcss/forms")({
+      strategy: "class",
+    }),
+  ],
 });

@@ -1,3 +1,101 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.breadcrumb .breadcrumb-item {
+  position: relative;
+}
+.breadcrumb .breadcrumb-item:first-child {
+  margin-left: 0 !important;
+}
+.breadcrumb .breadcrumb-item:not(:last-child):after {
+  content: "/";
+}
+
+.react-datepicker__input-container input {
+  @apply block w-full text-base bg-white border border-gray-300 rounded shadow-sm md:text-sm form-input;
+}
+
+.react-datepicker__tab-loop {
+  @apply absolute;
+}
+
+.react-datepicker-popper {
+  @apply absolute top-1 z-50 left-0 w-72 text-sm transform-none bg-white shadow px-3 py-2 !important;
+}
+
+.react-datepicker__month-container {
+  @apply flex flex-col;
+}
+
+.react-datepicker__month {
+  @apply flex flex-col;
+}
+
+.react-datepicker__current-month {
+  @apply ml-2.5 text-lg font-semibold text-gray-800;
+}
+
+.react-datepicker__week {
+  @apply flex justify-around;
+}
+
+.react-datepicker__day-names {
+  @apply flex justify-around text-xs font-medium text-center text-gray-800;
+}
+
+.react-datepicker__day-name {
+  @apply flex items-center justify-center w-8 h-8 py-1 rounded-full;
+}
+
+.react-datepicker__navigation {
+  @apply absolute top-2;
+}
+
+.react-datepicker__navigation--previous {
+  @apply flex items-center justify-center w-8 h-8 transition rounded right-12 hover:bg-gray-200;
+}
+
+.react-datepicker__navigation--next {
+  @apply flex items-center justify-center w-8 h-8 transition rounded right-4 hover:bg-gray-200;
+}
+
+.react-datepicker__day {
+  @apply flex items-center justify-center w-8 h-8 py-1 mb-1 text-sm leading-loose text-gray-700 transition rounded;
+}
+
+.react-datepicker__day--disabled {
+  @apply opacity-50 cursor-not-allowed hover:bg-transparent;
+}
+
+.react-datepicker__day--outside-month {
+  @apply text-gray-400;
+}
+
+.react-datepicker__day--in-range {
+  @apply bg-gray-200;
+}
+
+.react-datepicker__day--in-selecting-range {
+  @apply bg-blue-200;
+}
+
+.react-datepicker__day--selecting-range-start {
+  @apply bg-white border-2 border-blue-500;
+}
+
+.react-datepicker__day--selecting-range-end {
+  @apply bg-white border-2 border-blue-500;
+}
+
+.react-datepicker__day--selected {
+  @apply text-white bg-blue-500;
+}
+
+.react-datepicker__day--range-start {
+  @apply text-white bg-blue-500 hover:text-gray-700 hover:bg-white;
+}
+
+.react-datepicker__day--range-end {
+  @apply text-white bg-blue-500 hover:text-gray-700 hover:bg-white;
+}
