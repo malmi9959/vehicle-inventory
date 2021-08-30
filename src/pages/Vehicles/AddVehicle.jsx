@@ -34,7 +34,6 @@ const thumb = {
   border: "1px solid #eaeaea",
   marginBottom: 8,
   marginRight: 8,
-  width: 100,
   height: 100,
   padding: 4,
   boxSizing: "border-box",
@@ -128,8 +127,9 @@ const AddVehicle = () => {
       return;
     }
 
+    // get ext of file
     const extName = path.extname(file.name);
-
+    // rename file with reg_no.extname
     const renameFile = new File([file], `${data.reg_no}${extName}`, {
       type: file.type,
     });
@@ -139,24 +139,26 @@ const AddVehicle = () => {
       return;
     }
 
+    //* Form Data
     const formData = {
-      last_service_date: DateTime.fromJSDate(lastServiceDate).toISO(),
       ...data,
+      last_service_date: DateTime.fromJSDate(lastServiceDate).toISO(),
       mileage: Number.parseInt(data.mileage),
       image: renameFile,
       service_period: Number.parseInt(data.service_period),
     };
 
+    // Mutation
     addVehicle({
       variables: {
         ...formData,
       },
     })
-      .then(({ data }) => {
-        console.log(data);
+      .then(() => {
         window.location.href("/app/vehicles");
       })
       .catch((err) => {
+        // TODO handle error
         console.log(err);
       });
   };
@@ -216,14 +218,21 @@ const AddVehicle = () => {
               </Label>
               <Label className="mt-4">
                 <span>Reg No</span>
+                <br />
+                <HelperText>ex: KN ****</HelperText>
                 <Input
+                  valid={!errors?.reg_no}
                   {...register("reg_no", {
-                    required: true,
+                    required: "This field is required",
                   })}
                   className="mt-1"
                   placeholder="Enter Vehicle Reg No"
                 />
-                <HelperText>ex: KN ****</HelperText>
+                {errors?.reg_no && (
+                  <HelperText valid={false}>
+                    {errors?.reg_no?.message}
+                  </HelperText>
+                )}
               </Label>
               <Label className="mt-4">
                 <span>Type</span>
@@ -265,15 +274,21 @@ const AddVehicle = () => {
 
               <Label className="mt-4">
                 <span>Mileage</span>
+                <HelperText>ex: 20000 km</HelperText>
                 <Input
+                  valid={!errors?.mileage}
                   {...register("mileage", {
-                    required: true,
+                    required: "This field is required",
                   })}
                   className="mt-1"
                   type="text"
                   placeholder="Mileage"
                 />
-                <HelperText>ex: 20000 km</HelperText>
+                {errors?.mileage && (
+                  <HelperText valid={!errors?.mileage}>
+                    {errors?.mileage?.message}
+                  </HelperText>
+                )}
               </Label>
             </CardBody>
           </Card>
@@ -344,16 +359,20 @@ const AddVehicle = () => {
                   <input {...getInputProps()} />
                   <p>Drag 'n' drop some files here, or click to select files</p>
                 </div>
-                <h4 className="mt-2">Preview</h4>
-                <aside className="mt-2" style={thumbsContainer}>
-                  <ul>
-                    <div style={thumb}>
-                      <div style={thumbInner}>
-                        <img alt="" src={preview} style={img} />
-                      </div>
-                    </div>
-                  </ul>
-                </aside>
+                {preview && (
+                  <>
+                    <h4 className="mt-2">Preview</h4>
+                    <aside className="mt-2" style={thumbsContainer}>
+                      <ul>
+                        <div style={thumb}>
+                          <div style={thumbInner}>
+                            <img alt="" src={preview} style={img} />
+                          </div>
+                        </div>
+                      </ul>
+                    </aside>
+                  </>
+                )}
               </section>
             </CardBody>
           </Card>
