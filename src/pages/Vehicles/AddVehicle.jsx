@@ -1,5 +1,6 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
+  Button,
   Card,
   CardBody,
   HelperText,
@@ -7,28 +8,158 @@ import {
   Label,
   Select,
 } from "@windmill/react-ui";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import PageTitle from "../../components/Typography/PageTitle";
 import SectionTitle from "../../components/Typography/SectionTitle";
+
 import { GET_NEXT_VEHICLE_ID } from "../../graphql/queries";
 import DatePicker from "react-datepicker";
 import { DateTime } from "luxon";
+import { useDropzone } from "react-dropzone";
+import { ADD_VEHICLE } from "../../graphql/mutations";
+import path from "path";
+
+const thumbsContainer = {
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  marginTop: 16,
+};
+
+const thumb = {
+  display: "inline-flex",
+  borderRadius: 2,
+  border: "1px solid #eaeaea",
+  marginBottom: 8,
+  marginRight: 8,
+  width: 100,
+  height: 100,
+  padding: 4,
+  boxSizing: "border-box",
+};
+
+const thumbInner = {
+  display: "flex",
+  minWidth: 0,
+  overflow: "hidden",
+};
+
+const img = {
+  display: "block",
+  width: "auto",
+  height: "100%",
+};
+
+const baseStyle = {
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  padding: "20px",
+  borderWidth: 2,
+  borderRadius: 2,
+  borderColor: "#eeeeee",
+  borderStyle: "dashed",
+  backgroundColor: "#fafafa",
+  color: "#bdbdbd",
+  outline: "none",
+  transition: "border .24s ease-in-out",
+};
+
+const activeStyle = {
+  borderColor: "#2196f3",
+};
+
+const acceptStyle = {
+  borderColor: "#00e676",
+};
+
+const rejectStyle = {
+  borderColor: "#ff1744",
+};
 
 const AddVehicle = () => {
   const [lastServiceDate, setLastServiceDate] = useState(new Date());
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(
-    new Date().setMonth(startDate.getMonth() + 1)
-  );
+  const [preview, setPreview] = useState("");
+  const [addVehicle] = useMutation(ADD_VEHICLE, {
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  const [file, setFile] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragAccept,
+    isDragReject,
+  } = useDropzone({
+    accept: "image/*",
+    maxFiles: 1,
+    onDrop: (acceptedFiles) => {
+      setPreview(URL.createObjectURL(acceptedFiles[0]));
+      setFile(acceptedFiles[0]);
+    },
+  });
+
+  const style = useMemo(
+    () => ({
+      ...baseStyle,
+      ...(isDragActive ? activeStyle : {}),
+      ...(isDragAccept ? acceptStyle : {}),
+      ...(isDragReject ? rejectStyle : {}),
+    }),
+    [isDragActive, isDragReject, isDragAccept]
+  );
+
   const nextVehicleIdData = useQuery(GET_NEXT_VEHICLE_ID);
+
+  const onSubmit = (data) => {
+    if (!file) {
+      console.log("Please add image");
+      return;
+    }
+
+    const extName = path.extname(file.name);
+
+    const renameFile = new File([file], `${data.reg_no}${extName}`, {
+      type: file.type,
+    });
+
+    if (!lastServiceDate) {
+      console.log("Select Last Service Date!");
+      return;
+    }
+
+    const formData = {
+      last_service_date: DateTime.fromJSDate(lastServiceDate).toISO(),
+      ...data,
+      mileage: Number.parseInt(data.mileage),
+      image: renameFile,
+      service_period: Number.parseInt(data.service_period),
+    };
+
+    addVehicle({
+      variables: {
+        ...formData,
+      },
+    })
+      .then(({ data }) => {
+        console.log(data);
+        window.location.href("/app/vehicles");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <Fragment>
@@ -56,7 +187,19 @@ const AddVehicle = () => {
       <div>
         <SectionTitle>Vehicle Information</SectionTitle>
 
-        <form className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800"
+        >
+          <div className="flex justify-end pt-4 pb-4">
+            <Button
+              type="submit"
+              to="/app/vehicles/add"
+              className="float-right w-1/3 bg-green-400 hover:bg-green-500"
+            >
+              Add Vehicle
+            </Button>
+          </div>
           <Card>
             <CardBody>
               <Label>
@@ -73,12 +216,18 @@ const AddVehicle = () => {
               </Label>
               <Label className="mt-4">
                 <span>Reg No</span>
-                <Input className="mt-1" placeholder="Enter Vehicle Reg No" />
+                <Input
+                  {...register("reg_no", {
+                    required: true,
+                  })}
+                  className="mt-1"
+                  placeholder="Enter Vehicle Reg No"
+                />
                 <HelperText>ex: KN ****</HelperText>
               </Label>
               <Label className="mt-4">
                 <span>Type</span>
-                <Select className="mt-1">
+                <Select {...register("type")} className="mt-1">
                   <option>Light</option>
                   <option>Dual Purpose</option>
                   <option>Heavy Duty</option>
@@ -87,32 +236,43 @@ const AddVehicle = () => {
               </Label>
               <Label className="mt-4">
                 <span>Brand</span>
-                <Input className="mt-1" placeholder="Vehicle Brand" />
+                <Input
+                  {...register("brand")}
+                  className="mt-1"
+                  placeholder="Vehicle Brand"
+                />
                 <HelperText>ex: Toyota, Nissan</HelperText>
               </Label>
               <Label className="mt-4">
                 <span>Model</span>
-                <Input className="mt-1" placeholder="Vehicle Model" />
-                <HelperText>ex: Car, Bike</HelperText>
+                <Input
+                  {...register("model")}
+                  className="mt-1"
+                  placeholder="Vehicle Model"
+                />
+                <HelperText>ex: Corolla, Prius</HelperText>
               </Label>
 
               <div className="mt-4">
-                <Label>Condition</Label>
-                <div className="mt-2">
-                  <Label radio>
-                    <Input type="radio" value="brand_new" name="condition" />
-                    <span className="ml-2">Brand New</span>
-                  </Label>
-                  <Label className="ml-6" radio>
-                    <Input type="radio" value="business" name="condition" />
-                    <span className="ml-2">Used</span>
-                  </Label>
-                </div>
+                <Label className="mt-4">
+                  <span>Type</span>
+                  <Select {...register("condition")} className="mt-1">
+                    <option>Brand New</option>
+                    <option>Used</option>
+                  </Select>
+                </Label>
               </div>
 
               <Label className="mt-4">
                 <span>Mileage</span>
-                <Input className="mt-1" type="number" placeholder="Mileage" />
+                <Input
+                  {...register("mileage", {
+                    required: true,
+                  })}
+                  className="mt-1"
+                  type="text"
+                  placeholder="Mileage"
+                />
                 <HelperText>ex: 20000 km</HelperText>
               </Label>
             </CardBody>
@@ -123,15 +283,26 @@ const AddVehicle = () => {
               <SectionTitle>Owner's Information</SectionTitle>
               <Label>
                 <span>Owner Name</span>
-                <Input className="mt-1" type="text" placeholder="Full Name" />
+                <Input
+                  {...register("owner_name")}
+                  className="mt-1"
+                  type="text"
+                  placeholder="Full Name"
+                />
               </Label>
               <Label className="mt-4">
                 <span>Owner Address</span>
-                <Input className="mt-1" type="text" placeholder="Address" />
+                <Input
+                  {...register("owner_address")}
+                  className="mt-1"
+                  type="text"
+                  placeholder="Address"
+                />
               </Label>
               <Label className="mt-4">
                 <span>Owner Mobile</span>
                 <Input
+                  {...register("owner_mobile")}
                   className="mt-1"
                   type="text"
                   placeholder="Mobile Number"
@@ -146,18 +317,56 @@ const AddVehicle = () => {
                 <span>Last Service Date</span>
                 <DatePicker
                   selected={lastServiceDate}
-                  onChange={(date) => setLastServiceDate(date)}
+                  onChange={(date) => {
+                    setLastServiceDate(date);
+                  }}
                   nextMonthButtonLabel=">"
                   previousMonthButtonLabel="<"
                 />
               </Label>
               <Label className="mt-4">
                 <span>Service renewal period</span>
-                <Input className="mt-1" type="number" placeholder="Months" />
+                <Input
+                  {...register("service_period")}
+                  className="mt-1"
+                  type="text"
+                  placeholder="Months"
+                />
                 <HelperText>In months</HelperText>
               </Label>
             </CardBody>
           </Card>
+          <Card className="mt-4">
+            <CardBody>
+              <Label className="mb-3">Vehicle Image</Label>
+              <section>
+                <div {...getRootProps({ style })}>
+                  <input {...getInputProps()} />
+                  <p>Drag 'n' drop some files here, or click to select files</p>
+                </div>
+                <h4 className="mt-2">Preview</h4>
+                <aside className="mt-2" style={thumbsContainer}>
+                  <ul>
+                    <div style={thumb}>
+                      <div style={thumbInner}>
+                        <img alt="" src={preview} style={img} />
+                      </div>
+                    </div>
+                  </ul>
+                </aside>
+              </section>
+            </CardBody>
+          </Card>
+
+          <div className="flex justify-end pt-4">
+            <Button
+              type="submit"
+              to="/app/vehicles/add"
+              className="float-right w-1/3 bg-green-400 hover:bg-green-500"
+            >
+              Add Vehicle
+            </Button>
+          </div>
         </form>
       </div>
     </Fragment>

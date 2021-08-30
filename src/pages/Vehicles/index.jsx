@@ -32,13 +32,6 @@ const Vehicles = () => {
     return nextServiceDate;
   }
 
-  // useEffect(() => {
-  //   console.log(data);
-  //   findNextServiceDate(
-  //     data?.vehicles[0].last_service_date,
-  //     data?.vehicles[0].service_period
-  //   );
-  // }, [data]);
   return (
     <Fragment>
       <div className="flex items-center justify-between">
@@ -82,16 +75,8 @@ const Vehicles = () => {
                         <div className="relative p-2 mr-4 overflow-hidden rounded-md shadow-md">
                           <img width={80} src={item.image} alt="" />
                         </div>
-                        {/* <Avatar
-                      className="hidden mr-3 md:block"
-                      src={user.avatar}
-                      alt="User avatar"
-                    /> */}
                         <div>
                           <p className="font-semibold">{item._id}</p>
-                          {/* <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {user.job}
-                      </p> */}
                         </div>
                       </div>
                     </TableCell>
@@ -139,14 +124,6 @@ const Vehicles = () => {
               })}
           </TableBody>
         </Table>
-        <TableFooter>
-          {/* <Pagination
-            totalResults={totalResults}
-            resultsPerPage={resultsPerPage}
-            onChange={onPageChangeTable2}
-            label="Table navigation"
-          /> */}
-        </TableFooter>
       </TableContainer>
     </Fragment>
   );

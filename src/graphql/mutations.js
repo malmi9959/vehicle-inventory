@@ -12,29 +12,41 @@ export const LOGIN = gql`
 `;
 
 export const ADD_VEHICLE = gql`
-  input VehicleInput {
-    reg_no: String!
-    type: String
-    brand: String
-    model: String
-    owner_name: String
-    owner_mobile: String
-    owner_address: String
-    condition: String
-    mileage: Float!
-    last_service_date: String!
-    service_period: Int!
-    image: String!
-    last_month_fuel_usage: Float!
-  }
-  mutation AddVehicle($input: VehicleInput!) {
-    addVehicle(input: $input) {
+  mutation AddVehicle(
+    $reg_no: String!
+    $type: String
+    $brand: String
+    $model: String
+    $owner_name: String
+    $owner_mobile: String
+    $owner_address: String
+    $condition: String
+    $mileage: Int!
+    $last_service_date: String!
+    $service_period: Int!
+    $image: Upload!
+  ) {
+    addVehicle(
+      input: {
+        reg_no: $reg_no
+        type: $type
+        brand: $brand
+        model: $model
+        owner_name: $owner_name
+        owner_mobile: $owner_mobile
+        owner_address: $owner_address
+        condition: $condition
+        mileage: $mileage
+        last_service_date: $last_service_date
+        service_period: $service_period
+        image: $image
+      }
+    ) {
       _id
       reg_no
       brand
       condition
       image
-      last_month_fuel_usage
       last_service_date
       mileage
       model
