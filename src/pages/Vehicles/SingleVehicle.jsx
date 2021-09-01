@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { Badge, Card, CardBody, Label } from "@windmill/react-ui";
+import { Badge, Button, Card, CardBody, Label } from "@windmill/react-ui";
 import React, { Fragment, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageTitle from "../../components/Typography/PageTitle";
@@ -47,7 +47,20 @@ const SingleVehicle = (props) => {
         </nav>
       </div>
 
-      <PageTitle>Vehicle ID : {vehicleId}</PageTitle>
+      <div className="flex items-center justify-between">
+        <PageTitle>Vehicle ID : {vehicleId}</PageTitle>
+
+        <div>
+          <Button
+            tag={Link}
+            to={`/app/vehicles/update/${vehicleId}`}
+            className="mr-3 bg-orange-400 hover:bg-orange-500"
+          >
+            Update
+          </Button>
+          <Button className="bg-red-600 hover:bg-red-500">Delete</Button>
+        </div>
+      </div>
 
       <section>
         <Card className="bg-gray-50">
