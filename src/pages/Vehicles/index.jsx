@@ -111,7 +111,13 @@ const Vehicles = () => {
                         >
                           <EyeIcon className="w-5 h-5" aria-hidden="true" />
                         </Button>
-                        <Button layout="link" size="icon" aria-label="Edit">
+                        <Button
+                          tag={Link}
+                          to={`/app/vehicles/update/${item._id}`}
+                          layout="link"
+                          size="icon"
+                          aria-label="Edit"
+                        >
                           <EditIcon className="w-5 h-5" aria-hidden="true" />
                         </Button>
                         {/* <Button layout="link" size="icon" aria-label="Delete">

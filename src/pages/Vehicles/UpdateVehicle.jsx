@@ -10,17 +10,27 @@ import {
 } from "@windmill/react-ui";
 import React, { Fragment, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import PageTitle from "../../components/Typography/PageTitle";
 import SectionTitle from "../../components/Typography/SectionTitle";
 
-import { GET_NEXT_VEHICLE_ID } from "../../graphql/queries";
+import { VEHICLE_BY_ID } from "../../graphql/queries";
 import DatePicker from "react-datepicker";
 import { DateTime } from "luxon";
 import { useDropzone } from "react-dropzone";
-import { ADD_VEHICLE } from "../../graphql/mutations";
+import { UPDATE_VEHICLE } from "../../graphql/mutations";
 import path from "path";
 import Spinner from "../../components/Spinner";
+
+import { useToasts } from "react-toast-notifications";
+
+const vehicleTypes = [
+  "Light",
+  "Dual Purpose",
+  "Heavy Duty",
+  "Two Wheel/ Bikes",
+];
+const conditions = ["Brand New", "Used"];
 
 const thumbsContainer = {
   display: "flex",
@@ -80,10 +90,11 @@ const rejectStyle = {
   borderColor: "#ff1744",
 };
 
-const AddVehicle = () => {
+const UpdateVehicle = (props) => {
   const [lastServiceDate, setLastServiceDate] = useState(new Date());
   const [preview, setPreview] = useState("");
-  const [addVehicle, { loading }] = useMutation(ADD_VEHICLE, {
+  const { addToast } = useToasts();
+  const [updateVehicle, { loading }] = useMutation(UPDATE_VEHICLE, {
     onError: (error) => {
       console.log(error);
     },
@@ -110,6 +121,8 @@ const AddVehicle = () => {
     },
   });
 
+  const vehicleId = props.match.params.id;
+
   const style = useMemo(
     () => ({
       ...baseStyle,
@@ -120,47 +133,81 @@ const AddVehicle = () => {
     [isDragActive, isDragReject, isDragAccept]
   );
 
-  const nextVehicleIdData = useQuery(GET_NEXT_VEHICLE_ID);
+  const vehicle = useQuery(VEHICLE_BY_ID, {
+    variables: {
+      vehicleId: vehicleId,
+    },
+  });
 
-  const onSubmit = async (data) => {
-    if (!file) {
-      console.log("Please add image");
-      return;
+  // useEffect(() => {
+  //   console.log(vehicle.data);
+  // }, [vehicle.data]);
+
+  const onSubmit = (data) => {
+    const formData = {};
+
+    for (const [key, value] of Object.entries(data)) {
+      if (value && value !== undefined) {
+        Object.assign(formData, {
+          [key]: value,
+        });
+      }
     }
 
+    if (data.mileage) {
+      Object.assign(formData, {
+        mileage: Number.parseInt(data.mileage),
+      });
+    }
+
+    if (data.service_period) {
+      Object.assign(formData, {
+        service_period: Number.parseInt(data.service_period),
+      });
+    }
     // get ext of file
-    const extName = path.extname(file.name);
-    // rename file with reg_no.extname
-    const renameFile = new File([file], `${data.reg_no}${extName}`, {
-      type: file.type,
+    if (file) {
+      const extName = path.extname(file.name);
+      // rename file with reg_no.extname
+      const renameFile = new File(
+        [file],
+        `${vehicle.data?.vehicleById?.reg_no}${extName}`,
+        {
+          type: file.type,
+        }
+      );
+
+      Object.assign(formData, {
+        image: renameFile,
+      });
+    }
+
+    Object.assign(formData, {
+      last_service_date: DateTime.fromJSDate(lastServiceDate).toISO(),
     });
 
-    if (!lastServiceDate) {
-      console.log("Select Last Service Date!");
-      return;
-    }
-
-    //* Form Data
-    const formData = {
-      ...data,
-      last_service_date: DateTime.fromJSDate(lastServiceDate).toISO(),
-      mileage: Number.parseInt(data.mileage),
-      image: renameFile,
-      service_period: Number.parseInt(data.service_period),
-    };
+    console.log(formData);
 
     // Mutation
-    await addVehicle({
+    updateVehicle({
       variables: {
+        id: vehicleId,
         ...formData,
       },
     })
-      .then(({ data }) => {
+      .then(() => {
         if (data) {
-          window.location.href = "/app/vehicles/";
+          // console.log(data);
+          addToast("Successfully Update", {
+            appearance: "success",
+          });
+          // window.location.href = "/app/vehicles/";
         }
       })
       .catch((err) => {
+        addToast("Something went wrong!", {
+          appearance: "error",
+        });
         // TODO handle error
         console.log(err);
       });
@@ -200,34 +247,29 @@ const AddVehicle = () => {
             <Button
               type="submit"
               to="/app/vehicles/add"
-              className="float-right w-1/3 bg-green-400 hover:bg-green-500"
+              className="float-right w-1/3 bg-orange-400 hover:bg-orange-500"
             >
-              {!loading ? "Add Vehicle" : <Spinner />}
+              {!loading ? "Update Vehicle" : <Spinner />}
             </Button>
           </div>
           <Card>
             <CardBody>
               <Label>
                 <span>Vehicle ID</span>
-                {!nextVehicleIdData?.loading ? (
-                  <Input
-                    disabled
-                    className="mt-1"
-                    value={nextVehicleIdData?.data?.nextVehicleId}
-                  />
-                ) : (
-                  <div>Loading...</div>
-                )}
+                <Input
+                  disabled
+                  className="mt-1"
+                  value={vehicle.data?.vehicleById?._id}
+                />
               </Label>
               <Label className="mt-4">
                 <span>Reg No</span>
                 <br />
-                <HelperText>ex: KN ****</HelperText>
+                {/* <HelperText>ex: KN ****</HelperText> */}
                 <Input
                   valid={!errors?.reg_no}
-                  {...register("reg_no", {
-                    required: "This field is required",
-                  })}
+                  {...register("reg_no")}
+                  defaultValue={vehicle.data?.vehicleById?.reg_no}
                   className="mt-1"
                   placeholder="Enter Vehicle Reg No"
                 />
@@ -239,17 +281,26 @@ const AddVehicle = () => {
               </Label>
               <Label className="mt-4">
                 <span>Type</span>
-                <Select {...register("type")} className="mt-1">
-                  <option>Bike</option>
-                  <option>Light</option>
-                  <option>Dual Purpose</option>
-                  <option>Heavy Duty</option>
-                  <option>Two Wheel/ Bikes</option>
-                </Select>
+                {vehicle.data?.vehicleById?.type && (
+                  <Select
+                    defaultValue={vehicle.data?.vehicleById?.type}
+                    {...register("type")}
+                    className="mt-1"
+                  >
+                    {vehicleTypes.map((item, index) => {
+                      return (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                )}{" "}
               </Label>
               <Label className="mt-4">
                 <span>Brand</span>
                 <Input
+                  defaultValue={vehicle.data?.vehicleById?.brand}
                   {...register("brand")}
                   className="mt-1"
                   placeholder="Vehicle Brand"
@@ -259,6 +310,7 @@ const AddVehicle = () => {
               <Label className="mt-4">
                 <span>Model</span>
                 <Input
+                  defaultValue={vehicle.data?.vehicleById?.model}
                   {...register("model")}
                   className="mt-1"
                   placeholder="Vehicle Model"
@@ -269,10 +321,21 @@ const AddVehicle = () => {
               <div className="mt-4">
                 <Label className="mt-4">
                   <span>Condition</span>
-                  <Select {...register("condition")} className="mt-1">
-                    <option>Brand New</option>
-                    <option>Used</option>
-                  </Select>
+                  {vehicle.data?.vehicleById?.condition && (
+                    <Select
+                      defaultValue={vehicle.data?.vehicleById?.condition}
+                      {...register("condition")}
+                      className="mt-1"
+                    >
+                      {conditions.map((cond, index) => {
+                        return (
+                          <option key={index} value={cond}>
+                            {cond}
+                          </option>
+                        );
+                      })}
+                    </Select>
+                  )}
                 </Label>
               </div>
 
@@ -280,10 +343,9 @@ const AddVehicle = () => {
                 <span>Mileage</span>
                 <HelperText>ex: 20000 km</HelperText>
                 <Input
+                  defaultValue={vehicle.data?.vehicleById?.mileage}
                   valid={!errors?.mileage}
-                  {...register("mileage", {
-                    required: "This field is required",
-                  })}
+                  {...register("mileage")}
                   className="mt-1"
                   type="text"
                   placeholder="Mileage"
@@ -303,6 +365,7 @@ const AddVehicle = () => {
               <Label>
                 <span>Owner Name</span>
                 <Input
+                  defaultValue={vehicle.data?.vehicleById?.owner_name}
                   {...register("owner_name")}
                   className="mt-1"
                   type="text"
@@ -312,6 +375,7 @@ const AddVehicle = () => {
               <Label className="mt-4">
                 <span>Owner Address</span>
                 <Input
+                  defaultValue={vehicle.data?.vehicleById?.owner_address}
                   {...register("owner_address")}
                   className="mt-1"
                   type="text"
@@ -321,6 +385,7 @@ const AddVehicle = () => {
               <Label className="mt-4">
                 <span>Owner Mobile</span>
                 <Input
+                  defaultValue={vehicle.data?.vehicleById?.owner_mobile}
                   {...register("owner_mobile")}
                   className="mt-1"
                   type="text"
@@ -334,18 +399,25 @@ const AddVehicle = () => {
               <SectionTitle>Service Details</SectionTitle>
               <Label className="relative">
                 <span>Last Service Date</span>
-                <DatePicker
-                  selected={lastServiceDate}
-                  onChange={(date) => {
-                    setLastServiceDate(date);
-                  }}
-                  nextMonthButtonLabel=">"
-                  previousMonthButtonLabel="<"
-                />
+                {vehicle.data?.vehicleById?.last_service_date && (
+                  <DatePicker
+                    selected={DateTime.fromMillis(
+                      Number.parseInt(
+                        vehicle.data?.vehicleById?.last_service_date
+                      )
+                    ).toJSDate()}
+                    onChange={(date) => {
+                      setLastServiceDate(date);
+                    }}
+                    nextMonthButtonLabel=">"
+                    previousMonthButtonLabel="<"
+                  />
+                )}
               </Label>
               <Label className="mt-4">
                 <span>Service renewal period</span>
                 <Input
+                  defaultValue={vehicle.data?.vehicleById?.service_period}
                   {...register("service_period")}
                   className="mt-1"
                   type="text"
@@ -363,20 +435,40 @@ const AddVehicle = () => {
                   <input {...getInputProps()} />
                   <p>Drag 'n' drop some files here, or click to select files</p>
                 </div>
-                {preview && (
-                  <>
-                    <h4 className="mt-2">Preview</h4>
-                    <aside className="mt-2" style={thumbsContainer}>
-                      <ul>
-                        <div style={thumb}>
-                          <div style={thumbInner}>
-                            <img alt="" src={preview} style={img} />
+                <div className="flex">
+                  {vehicle.data?.vehicleById?.image && (
+                    <div>
+                      <h4 className="mt-2">Current Image</h4>
+                      <div className="mt-2" style={thumbsContainer}>
+                        <ul>
+                          <div style={thumb}>
+                            <div style={thumbInner}>
+                              <img
+                                alt=""
+                                src={vehicle.data?.vehicleById?.image}
+                                style={img}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </ul>
-                    </aside>
-                  </>
-                )}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                  {preview && (
+                    <div>
+                      <h4 className="mt-2">Preview</h4>
+                      <div className="mt-2" style={thumbsContainer}>
+                        <ul>
+                          <div style={thumb}>
+                            <div style={thumbInner}>
+                              <img alt="" src={preview} style={img} />
+                            </div>
+                          </div>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </section>
             </CardBody>
           </Card>
@@ -385,9 +477,9 @@ const AddVehicle = () => {
             <Button
               type="submit"
               to="/app/vehicles/add"
-              className="float-right w-1/3 bg-green-400 hover:bg-green-500"
+              className="float-right w-1/3 bg-orange-400 hover:bg-orange-500"
             >
-              {!loading ? "Add Vehicle" : <Spinner />}
+              {!loading ? "Update Vehicle" : <Spinner />}
             </Button>
           </div>
         </form>
@@ -396,4 +488,4 @@ const AddVehicle = () => {
   );
 };
 
-export default AddVehicle;
+export default UpdateVehicle;

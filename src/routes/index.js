@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import AddVehicle from "../pages/Vehicles/AddVehicle";
 import SingleVehicle from "../pages/Vehicles/SingleVehicle";
+import UpdateVehicle from "../pages/Vehicles/UpdateVehicle";
 const Profile = lazy(() => import("../pages/Profile"));
 const Vehicles = lazy(() => import("../pages/Vehicles"));
 const Page404 = lazy(() => import("../pages/404"));
@@ -9,6 +10,10 @@ const routes = [
   {
     path: "/vehicles",
     component: Vehicles,
+  },
+  {
+    path: "/vehicles/update/:id",
+    component: UpdateVehicle,
   },
   {
     path: "/vehicles/add",
