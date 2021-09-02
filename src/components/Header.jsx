@@ -6,7 +6,6 @@ import {
   OutlineCogIcon,
   OutlineLogoutIcon,
   SearchIcon,
-  BellIcon,
 } from "../icons";
 import {
   Avatar,
@@ -18,7 +17,6 @@ import {
   ModalFooter,
   Button,
   Input,
-  Badge,
 } from "@windmill/react-ui";
 
 function Header(props) {
@@ -32,16 +30,16 @@ function Header(props) {
     setIsModalOpen(false);
   }
 
-  const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
+  // const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-  function handleNotificationsClick() {
-    if (isNotificationsMenuOpen) {
-      setIsNotificationsMenuOpen(false);
-    } else {
-      setIsNotificationsMenuOpen(true);
-    }
-  }
+  // function handleNotificationsClick() {
+  //   if (isNotificationsMenuOpen) {
+  //     setIsNotificationsMenuOpen(false);
+  //   } else {
+  //     setIsNotificationsMenuOpen(true);
+  //   }
+  // }
 
   function handleProfileClick() {
     setIsProfileMenuOpen(!isProfileMenuOpen);
@@ -90,7 +88,7 @@ function Header(props) {
             </button>
           </li> */}
           {/* <!-- Notifications menu --> */}
-          <li className="relative">
+          {/* <li className="relative">
             <button
               className="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple"
               onClick={handleNotificationsClick}
@@ -122,7 +120,7 @@ function Header(props) {
                 <span>Alerts</span>
               </DropdownItem>
             </Dropdown>
-          </li>
+          </li> */}
           {/* <!-- Profile menu --> */}
           <li className="relative">
             <button

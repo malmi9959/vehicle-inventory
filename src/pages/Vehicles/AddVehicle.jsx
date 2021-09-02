@@ -10,7 +10,7 @@ import {
 } from "@windmill/react-ui";
 import React, { Fragment, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import PageTitle from "../../components/Typography/PageTitle";
 import SectionTitle from "../../components/Typography/SectionTitle";
 

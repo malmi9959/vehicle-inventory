@@ -30,8 +30,10 @@ import { ReactComponent as PhoneIcon } from "./phone.svg";
 import { ReactComponent as CalendarIcon } from "./calendar.svg";
 import { ReactComponent as VehicleIcon } from "./vehicle.svg";
 import { ReactComponent as EyeIcon } from "./eye.svg";
+import { ReactComponent as FireIcon } from "./fire.svg";
 
 export {
+  FireIcon,
   ButtonsIcon,
   CardsIcon,
   ChartsIcon,

@@ -1,19 +1,65 @@
-import { useQuery } from "@apollo/client";
-import { Badge, Button, Card, CardBody, Label } from "@windmill/react-ui";
-import React, { Fragment, useEffect } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+} from "@windmill/react-ui";
+import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import PageTitle from "../../components/Typography/PageTitle";
 import SectionTitle from "../../components/Typography/SectionTitle";
 import { VEHICLE_BY_ID } from "../../graphql/queries";
 import { DateTime } from "luxon";
+import { DELETE_VEHICLE } from "../../graphql/mutations";
+import { useToasts } from "react-toast-notifications";
+import Spinner from "../../components/Spinner";
 
 const SingleVehicle = (props) => {
+  const { addToast } = useToasts();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const vehicleId = props.match.params.id;
-  const { data, loading, error } = useQuery(VEHICLE_BY_ID, {
+  const { data, loading } = useQuery(VEHICLE_BY_ID, {
     variables: {
       vehicleId: vehicleId,
     },
   });
+
+  function openDeleteModal() {
+    setIsDeleteModalOpen(true);
+  }
+
+  function closeDeleteModal() {
+    setIsDeleteModalOpen(false);
+  }
+
+  const [deleteVehicle, { loading: deleteLoading }] =
+    useMutation(DELETE_VEHICLE);
+
+  function handleDeleteVehicle() {
+    deleteVehicle({
+      variables: {
+        id: vehicleId,
+      },
+    })
+      .then((data) => {
+        addToast(data.data?.deleteVehicle, {
+          appearance: "success",
+        });
+      })
+      .then(() => {
+        window.location.href = "/app/vehicles/";
+      })
+      .catch((err) => {
+        addToast(err, {
+          appearance: "error",
+        });
+      });
+  }
 
   const lastServiceDate = (date) =>
     DateTime.fromMillis(Number.parseInt(date)).toLocaleString(
@@ -58,7 +104,37 @@ const SingleVehicle = (props) => {
           >
             Update
           </Button>
-          <Button className="bg-red-600 hover:bg-red-500">Delete</Button>
+          <Button
+            onClick={openDeleteModal}
+            className="bg-red-600 hover:bg-red-500"
+          >
+            Delete
+          </Button>
+          <Modal isOpen={isDeleteModalOpen} onClose={closeDeleteModal}>
+            <ModalBody>Are you sure want to delete {vehicleId} ?</ModalBody>
+            <ModalFooter>
+              <div className="block w-full ">
+                <Button
+                  block
+                  size="regular"
+                  layout="outline"
+                  onClick={closeDeleteModal}
+                >
+                  Cancel
+                </Button>
+              </div>
+              <div className="block w-full ">
+                <Button
+                  className="bg-red-600 hover:bg-red-500"
+                  block
+                  size="regular"
+                  onClick={handleDeleteVehicle}
+                >
+                  {!deleteLoading ? "Delete" : <Spinner />}
+                </Button>
+              </div>
+            </ModalFooter>
+          </Modal>
         </div>
       </div>
 

@@ -4,12 +4,11 @@ import {
   TableHeader,
   TableBody,
   TableCell,
-  TableFooter,
   TableRow,
   Badge,
   Button,
 } from "@windmill/react-ui";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import PageTitle from "../../components/Typography/PageTitle";
 import SectionTitle from "../../components/Typography/SectionTitle";
@@ -21,7 +20,7 @@ import { useQuery } from "@apollo/client";
 import { VEHICLES } from "../../graphql/queries";
 
 const Vehicles = () => {
-  const { data, loading, error } = useQuery(VEHICLES);
+  const { data } = useQuery(VEHICLES);
 
   function findNextServiceDate(lastServiceDate, period) {
     const dateToNumber = Number.parseInt(lastServiceDate);

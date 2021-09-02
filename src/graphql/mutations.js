@@ -11,6 +11,12 @@ export const LOGIN = gql`
   }
 `;
 
+export const DELETE_VEHICLE = gql`
+  mutation DeleteVehicle($id: String!) {
+    deleteVehicle(id: $id)
+  }
+`;
+
 export const UPDATE_VEHICLE = gql`
   mutation UpdateVehicle(
     $reg_no: String
