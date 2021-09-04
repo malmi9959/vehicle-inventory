@@ -20,6 +20,7 @@ export const SidebarProvider = ({ children }) => {
       toggleSidebar,
       closeSidebar,
     }),
+    // eslint-disable-next-line
     [isSidebarOpen]
   );
 

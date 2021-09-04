@@ -18,6 +18,7 @@ function Layout() {
 
   useEffect(() => {
     closeSidebar();
+    // eslint-disable-next-line
   }, [location]);
 
   return (
