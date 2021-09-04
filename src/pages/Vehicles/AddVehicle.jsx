@@ -21,6 +21,7 @@ import { useDropzone } from "react-dropzone";
 import { ADD_VEHICLE } from "../../graphql/mutations";
 import path from "path";
 import Spinner from "../../components/Spinner";
+import { useToasts } from "react-toast-notifications";
 
 const thumbsContainer = {
   display: "flex",
@@ -83,6 +84,8 @@ const rejectStyle = {
 const AddVehicle = () => {
   const [lastServiceDate, setLastServiceDate] = useState(new Date());
   const [preview, setPreview] = useState("");
+
+  const { addToast } = useToasts();
   const [addVehicle, { loading }] = useMutation(ADD_VEHICLE, {
     onError: (error) => {
       console.log(error);
@@ -149,6 +152,8 @@ const AddVehicle = () => {
       service_period: Number.parseInt(data.service_period),
     };
 
+    addToast("Adding new vehicle...");
+
     // Mutation
     await addVehicle({
       variables: {
@@ -188,7 +193,7 @@ const AddVehicle = () => {
           </ol>
         </nav>
       </div>
-      <PageTitle>Add Vehicle</PageTitle>
+      <PageTitle>Register Vehicle</PageTitle>
       <div>
         <SectionTitle>Vehicle Information</SectionTitle>
 
@@ -198,11 +203,12 @@ const AddVehicle = () => {
         >
           <div className="flex justify-end pt-4 pb-4">
             <Button
+              disabled={loading}
               type="submit"
               to="/app/vehicles/add"
               className="float-right w-1/3 bg-green-400 hover:bg-green-500"
             >
-              {!loading ? "Add Vehicle" : <Spinner />}
+              {!loading ? "Register Vehicle" : <Spinner />}
             </Button>
           </div>
           <Card>
@@ -383,11 +389,12 @@ const AddVehicle = () => {
 
           <div className="flex justify-end pt-4">
             <Button
+              disabled={loading}
               type="submit"
               to="/app/vehicles/add"
               className="float-right w-1/3 bg-green-400 hover:bg-green-500"
             >
-              {!loading ? "Add Vehicle" : <Spinner />}
+              {!loading ? "Register Vehicle" : <Spinner />}
             </Button>
           </div>
         </form>

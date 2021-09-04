@@ -186,8 +186,9 @@ const UpdateVehicle = (props) => {
       last_service_date: DateTime.fromJSDate(lastServiceDate).toISO(),
     });
 
-    console.log(formData);
-
+    addToast("Image Uploading...", {
+      appearance: "info",
+    });
     // Mutation
     updateVehicle({
       variables: {
@@ -201,7 +202,7 @@ const UpdateVehicle = (props) => {
           addToast("Successfully Update", {
             appearance: "success",
           });
-          // window.location.href = "/app/vehicles/";
+          window.location.href = "/app/vehicles/";
         }
       })
       .catch((err) => {
@@ -245,6 +246,7 @@ const UpdateVehicle = (props) => {
         >
           <div className="flex justify-end pt-4 pb-4">
             <Button
+              disabled={loading}
               type="submit"
               to="/app/vehicles/add"
               className="float-right w-1/3 bg-orange-400 hover:bg-orange-500"
@@ -475,6 +477,7 @@ const UpdateVehicle = (props) => {
 
           <div className="flex justify-end pt-4">
             <Button
+              disabled={loading}
               type="submit"
               to="/app/vehicles/add"
               className="float-right w-1/3 bg-orange-400 hover:bg-orange-500"
