@@ -11,6 +11,19 @@ export const LOGIN = gql`
   }
 `;
 
+export const ADD_FUEL_USAGE = gql`
+  mutation AddFuelUsage($vehicleId: String!, $usage: Float!) {
+    addFuelUsage(input: { vehicleId: $vehicleId, usage: $usage }) {
+      month
+      vehicleId
+      year
+      usage
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const DELETE_VEHICLE = gql`
   mutation DeleteVehicle($id: String!) {
     deleteVehicle(id: $id)

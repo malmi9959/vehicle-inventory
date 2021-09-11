@@ -34,6 +34,19 @@ export const GET_NEXT_VEHICLE_ID = gql`
   }
 `;
 
+export const FUEL_USAGES = gql`
+  query FuelUsages {
+    fuelUsages {
+      vehicleId
+      usage
+      month
+      year
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const VEHICLES = gql`
   query Vehicles {
     vehicles {
@@ -42,12 +55,6 @@ export const VEHICLES = gql`
       type
       brand
       model
-      fuel_usage {
-        month
-        year
-        usage
-        updatedAt
-      }
       owner_address
       owner_mobile
       owner_name
@@ -55,6 +62,13 @@ export const VEHICLES = gql`
       mileage
       service_period
       image
+      fuel_usage {
+        vehicleId
+        month
+        year
+        usage
+        createdAt
+      }
       condition
       createdAt
       updatedAt

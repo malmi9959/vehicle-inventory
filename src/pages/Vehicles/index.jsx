@@ -76,6 +76,9 @@ const Vehicles = () => {
                         </div>
                         <div>
                           <p className="font-semibold">{item._id}</p>
+                          <span>
+                            {item.brand} {item.model}
+                          </span>
                         </div>
                       </div>
                     </TableCell>

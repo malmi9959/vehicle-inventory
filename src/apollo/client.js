@@ -1,17 +1,24 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache, split } from "@apollo/client";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 import { setContext } from "@apollo/client/link/context";
 import { createUploadLink } from "apollo-upload-client";
 import { getWithExpiry } from "../utils/localStorage";
+
+const user = getWithExpiry("user");
 
 const httpLink = createUploadLink({
   uri: `${process.env.REACT_APP_GRAPHQL_API}`,
 });
 
-const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  const user = getWithExpiry("user");
+const wsLink = new WebSocketLink({
+  uri: `${process.env.REACT_APP_GRAPHQL_API_WS}`,
+  options: {
+    reconnect: true,
+  },
+});
 
-  // return the headers to the context so httpLink can read them
+const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
@@ -20,10 +27,22 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const link = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  authLink.concat(httpLink)
+);
+
 const client = new ApolloClient({
   ssrMode: typeof window === "undefined",
   cache: new InMemoryCache(),
-  link: authLink.concat(httpLink),
+  link: link,
   connectToDevTools: true,
 });
 
