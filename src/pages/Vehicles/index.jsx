@@ -8,19 +8,21 @@ import {
   Badge,
   Button,
 } from "@windmill/react-ui";
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import { Link } from "react-router-dom";
 import PageTitle from "../../components/Typography/PageTitle";
 import SectionTitle from "../../components/Typography/SectionTitle";
-import { EditIcon, EyeIcon } from "../../icons";
+import { EditIcon, EyeIcon, FormsIcon } from "../../icons";
 import { PlusIcon } from "@heroicons/react/solid";
 
 import { DateTime } from "luxon";
 import { useQuery } from "@apollo/client";
 import { VEHICLES } from "../../graphql/queries";
+import ReactToPrint from "react-to-print";
 
 const Vehicles = () => {
   const { data } = useQuery(VEHICLES);
+  const printComponent = useRef();
 
   function findNextServiceDate(lastServiceDate, period) {
     const dateToNumber = Number.parseInt(lastServiceDate);
@@ -31,6 +33,10 @@ const Vehicles = () => {
     return nextServiceDate;
   }
 
+  const printStyle = () => `@media print {
+  @page { size: landscape; }
+}`;
+
   return (
     <Fragment>
       <div className="flex items-center justify-between">
@@ -40,16 +46,23 @@ const Vehicles = () => {
             tag={Link}
             to="/app/vehicles/add"
             icon={PlusIcon}
-            className="bg-green-400 hover:bg-green-500"
+            className="mr-3 bg-green-400 hover:bg-green-500"
           >
             Add Vehicle
           </Button>
+          <ReactToPrint
+            pageStyle={<style>{printStyle}</style>}
+            trigger={() => <Button icon={FormsIcon}>Print Report</Button>}
+            content={() => printComponent.current}
+          />
         </div>
       </div>
 
-      <SectionTitle>Vehicle Information</SectionTitle>
+      <div className="flex items-center justify-between">
+        <SectionTitle>Vehicle Information</SectionTitle>
+      </div>
 
-      <TableContainer className="mb-8">
+      <TableContainer ref={printComponent} className="mb-8">
         <Table>
           <TableHeader>
             <tr>

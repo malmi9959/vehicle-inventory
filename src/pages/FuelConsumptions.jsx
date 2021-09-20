@@ -17,6 +17,7 @@ import ReactSelect from "react-select";
 import { ADD_FUEL_USAGE } from "../graphql/mutations";
 import RecentFuelUsages from "../components/RecentFuelUsages/RecentFuelUsages";
 import Spinner from "../components/Spinner";
+import { FuelUsageChart } from "../components/FuelUsage/FuelUsageChart";
 const { useToasts } = require("react-toast-notifications");
 
 const FuelConsumptions = () => {
@@ -153,6 +154,9 @@ const FuelConsumptions = () => {
         <div className="w-1/2 px-6">
           <RecentFuelUsages />
         </div>
+      </section>
+      <section>
+        <FuelUsageChart />
       </section>
     </Fragment>
   );
