@@ -8,7 +8,7 @@ import {
   Badge,
   Button,
 } from "@windmill/react-ui";
-import { Fragment, useRef } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import PageTitle from "../../components/Typography/PageTitle";
 import SectionTitle from "../../components/Typography/SectionTitle";
@@ -19,10 +19,39 @@ import { DateTime } from "luxon";
 import { useQuery } from "@apollo/client";
 import { VEHICLES } from "../../graphql/queries";
 import ReactToPrint from "react-to-print";
+import { useContext } from "react";
+import { SearchContext } from "../../context/SearchContext";
 
 const Vehicles = () => {
   const { data } = useQuery(VEHICLES);
+  const [vehicles, setVehicles] = useState(null);
   const printComponent = useRef();
+
+  const { searchTerm } = useContext(SearchContext);
+
+  useEffect(() => {
+    const searchTerms = searchTerm.split(" ");
+
+    if (data?.vehicles) {
+      const filterVehciles = data.vehicles;
+      const filteredData =
+        Array.isArray(filterVehciles) &&
+        filterVehciles.filter(
+          (item) =>
+            item._id.toLowerCase().includes(searchTerms) ||
+            item.brand.toLowerCase().includes(searchTerms) ||
+            item.model.toLowerCase().includes(searchTerms) ||
+            item.type.toLowerCase().includes(searchTerms)
+        );
+      setVehicles(filteredData);
+    }
+  }, [searchTerm, data]);
+
+  useEffect(() => {
+    if (data) {
+      setVehicles(data.vehicles);
+    }
+  }, [data]);
 
   function findNextServiceDate(lastServiceDate, period) {
     const dateToNumber = Number.parseInt(lastServiceDate);
@@ -76,15 +105,17 @@ const Vehicles = () => {
             </tr>
           </TableHeader>
           <TableBody>
-            {data &&
-              data?.vehicles &&
-              Array.isArray(data.vehicles) &&
-              data.vehicles.map((item) => {
+            {vehicles &&
+              Array.isArray(vehicles) &&
+              vehicles.map((item) => {
                 return (
                   <TableRow key={item._id}>
                     <TableCell>
                       <div className="flex items-center text-sm">
-                        <div className="relative p-2 mr-4 overflow-hidden rounded-md shadow-md">
+                        <div
+                          style={{ width: 80 }}
+                          className="relative p-2 mr-4 overflow-hidden rounded-md shadow-md"
+                        >
                           <img width={80} src={item.image} alt="" />
                         </div>
                         <div>

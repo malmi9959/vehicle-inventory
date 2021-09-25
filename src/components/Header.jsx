@@ -18,10 +18,11 @@ import {
   Button,
   Input,
 } from "@windmill/react-ui";
+import { SearchContext } from "../context/SearchContext";
 
 function Header(props) {
-  // const { mode, toggleMode } = useContext(WindmillContext);
   const { toggleSidebar } = useContext(SidebarContext);
+  const { setSearchTerm } = useContext(SearchContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   function openModal() {
     setIsModalOpen(true);
@@ -30,16 +31,7 @@ function Header(props) {
     setIsModalOpen(false);
   }
 
-  // const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-
-  // function handleNotificationsClick() {
-  //   if (isNotificationsMenuOpen) {
-  //     setIsNotificationsMenuOpen(false);
-  //   } else {
-  //     setIsNotificationsMenuOpen(true);
-  //   }
-  // }
 
   function handleProfileClick() {
     setIsProfileMenuOpen(!isProfileMenuOpen);
@@ -63,6 +55,10 @@ function Header(props) {
               <SearchIcon className="w-4 h-4" aria-hidden="true" />
             </div>
             <Input
+              onChange={(event) => {
+                const query = event.target.value.toLowerCase();
+                setSearchTerm(query);
+              }}
               className="pl-8 text-gray-700"
               placeholder="Search for Vehicles"
               aria-label="Search"
