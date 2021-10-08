@@ -127,7 +127,9 @@ const AddVehicle = () => {
 
   const onSubmit = async (data) => {
     if (!file) {
-      console.log("Please add image");
+      addToast("Please upload image of the vehicle", {
+        appearance: "warning",
+      });
       return;
     }
 
@@ -327,12 +329,20 @@ const AddVehicle = () => {
               <Label className="mt-4">
                 <span>Owner Mobile</span>
                 <Input
-                  {...register("owner_mobile")}
+                  {...register("owner_mobile", {
+                    pattern: /^(\+\d{1,3}[- ]?)?\d{10}$/,
+                  })}
                   className="mt-1"
                   type="text"
                   placeholder="Mobile Number"
                 />
               </Label>
+              {errors?.owner_mobile && (
+                <HelperText valid={false}>
+                  {errors?.owner_mobile?.type === "pattern" &&
+                    "Must be a valid number"}
+                </HelperText>
+              )}
             </CardBody>
           </Card>
           <Card className="mt-4 overflow-visible">
