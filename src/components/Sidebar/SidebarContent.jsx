@@ -28,7 +28,7 @@ function SidebarContent() {
           href="/#"
         >
           <h2 className="uppercase ">
-            <span className="font-semibold">AMD</span> Learners
+            <span className="font-semibold">Vehicle</span> Learners
           </h2>
         </a>
       </div>

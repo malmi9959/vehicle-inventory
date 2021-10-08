@@ -18,6 +18,7 @@ const Dashboard = () => {
   const { data, loading } = useQuery(VEHICLES);
   const [lastMonthFuelUsage, setLastMonthFuelUsage] = useState(null);
 
+  
   const printComponent = useRef();
   return (
     <div>

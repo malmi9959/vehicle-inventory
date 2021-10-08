@@ -73,7 +73,7 @@ const Login = () => {
         <div className="flex flex-col overflow-y-auto md:flex-row">
           <div style={boxStyles} className="h-32 md:h-auto md:w-1/2 ">
             <div className="text-2xl uppercase text-primary-light">
-              AMD Learners
+              Vehicle Learners
             </div>
             <div className="text-white">Vehicle Inventory</div>
           </div>
